@@ -1,0 +1,11 @@
+\frametitle{コーディング}
+\begin{tcolorbox}[title=Intro.lean]
+  \setlength{\baselineskip}{12pt}
+  \begin{verbatim}
+def total (a b c : Nat) (bag : Bool) : Nat :=
+  a*100 + b*50 + c*200 + if bag then 10 else 0
+  \end{verbatim}
+  \end{tcolorbox}
+
+  $total : Nat \to Nat \to Nat \to Bool \to Nat$という型を持つ関数を作った。
+  $+: Nat \to Nat \to Nat$を使う。

@@ -1,11 +1,15 @@
-\frametitle{コーディング}
-\begin{tcolorbox}[title=Intro.lean]
+\frametitle{タクティクを使った証明C}
+\begin{tcolorbox}[title=Assist.lean]
   \setlength{\baselineskip}{12pt}
-  \begin{verbatim}
-def total (a b c : Nat) (bag : Bool) : Nat :=
-  a*100 + b*50 + c*200 + if bag then 10 else 0
-  \end{verbatim}
+  \begin{Verbatim}[commandchars=\\\{\}, baselinestretch=1.5]
+theorem C (a : Nat) :
+    (a + 1) * (b + 1) =
+        a * b + a + b + 1 :=
+  calc
+    (a + 1) * (b + 1) =
+        a * (b + 1) + 1 * (b + 1) := by
+      apply Nat.right_distrib
+    _ = a * b + a + b + 1 := by
+      simp [Nat.left_distrib, Nat.add_assoc]
+  \end{Verbatim}
   \end{tcolorbox}
-
-  $total : Nat \to Nat \to Nat \to Bool \to Nat$という型を持つ関数を作った。
-  $+: Nat \to Nat \to Nat$を使う。

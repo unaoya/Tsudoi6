@@ -2,12 +2,19 @@
 \usepackage{luatexja}% 日本語したい
 \usepackage[ipaex]{luatexja-preset}% IPAexフォントしたい
 \renewcommand{\kanjifamilydefault}{\gtdefault}% 既定をゴシック体に
-% https://qiita.com/zr_tex8r/items/69e8cc32038ff29f5ac3
 
 \usepackage{color}
 \usepackage{framed}
 \usepackage{tcolorbox}
 \usepackage{fancyvrb}
+
+\usepackage{amsmath}
+\usepackage{amsthm}
+
+\usepackage{url}
+
+\newcommand{\type}[1]{\colorbox{green}{#1}}
+\newcommand{\term}[1]{\colorbox{yellow}{#1}}
 
 \usetheme{metropolis}
 
@@ -25,7 +32,7 @@
 
 \title{証明支援系LEANに入門しよう}
 \author{梅崎直也@unaoya}
-\date{第6回すうがく徒のつどい}
+\date{2024年10月20日 第6回すうがく徒のつどい}
 
 \begin{document}
 
@@ -40,9 +47,6 @@
     \item 証明を支援する仕組み
     \item 微積分学の基本定理を証明する
   \end{enumerate}
-
-  今回の目標は、証明支援系の仕組みをなんとなく理解すること。
-  使えるようになりたいかたは別のテキストなど参考文献をご覧ください。
 \end{frame}
 
 \begin{frame}{資料について}
@@ -51,295 +55,479 @@
   Xのアカウント@unaoya固定ポストにリンクがあります。
 \end{frame}
 
-\section{証明とプログラムの関係}
+\section{はじめてのLEAN}
 
 \begin{frame}[fragile]{はじめての証明}
   $1=1$を証明する。
 
-  \begin{tcolorbox}[title=Intro.lean]
+  \begin{tcolorbox}[title=FirstTheorem.lean]
   \setlength{\baselineskip}{12pt}
-  \begin{verbatim}
+  \begin{Verbatim}[commandchars=\\\{\}]
 def my_first_thm : 1 = 1 := Eq.refl 1
-  \end{verbatim}
+  \end{Verbatim}
   \end{tcolorbox}
+\end{frame}
+
+\begin{frame}[fragile]{型と項}
+  項 a が型 A を持つことを \term{a} : \type{A} と表す。
+  項は必ず型をもつ。
+  
+  \pause
+
+  \begin{tcolorbox}[title=FirstTheorem.lean]
+  \setlength{\baselineskip}{12pt}
+  \begin{Verbatim}[commandchars=\\\{\}, baselinestretch=1.5]
+\textcolor{blue}{def} \term{n} : \type{Nat} := \term{1}    
+\textcolor{blue}{def} \term{my_first_thm} : \type{1 = 1} := \term{Eq.refl 1}    
+  \end{Verbatim}
+  \end{tcolorbox}  
+
+  \term{n} という \type{Nat} 型の項を \term{1} という項により定義する。
+  \term{my\_first\_thm} という \type{1=1} 型の項を \term{Eq.refl 1} という項により定義する。
+\end{frame}
+
+\begin{frame}[fragile]{関数型}
+  項 \term{f} が型 \type{A} から型 \type{B} への関数型を持つことを、\term{f} : \type{A -> B}と書く。
 
   \pause
 
-  \begin{tcolorbox}[title=Intro.lean]
+  \begin{tcolorbox}[title=FirstTheorem.lean]
   \setlength{\baselineskip}{12pt}
-  \begin{Verbatim}[commandchars=\\\{\}]
-\textcolor{blue}{def} \colorbox{red}{my_first_thm} : \colorbox{green}{1 = 1} := \colorbox{yellow}{Eq.refl 1}    
+  \begin{Verbatim}[commandchars=\\\{\}, baselinestretch=1.5]
+\textcolor{blue}{def} \term{twice} : \type{Nat -> Nat} :=
+  \term{fun n => n + n}
   \end{Verbatim}
   \end{tcolorbox}  
 \end{frame}
 
-\begin{frame}[fragile]{LEANの初歩}
-  項$a$が型$A$を持つことを以下のように表す。
-  $$
-  a:A
-  $$
 
-  \begin{tcolorbox}[title=Intro.lean]
+\begin{frame}[fragile]{関数適用}
+  関数型の項 \term{f} : \type{A -> B} と項 \term{a} : \type{A} に対して、\term{f a} は型 \type{B} の項である。
+  この記法を利用して関数型の項を定義することもできる。
+
+  \pause
+
+  \begin{tcolorbox}[title=FirstTheorem.lean]
   \setlength{\baselineskip}{12pt}
-  \begin{verbatim}
-def n : Nat := 1
-def twice (n : Nat) : Nat := n + n
-def twice' : Nat -> Nat :=
-  fun n => n + n
-def m : Nat := twice 3
-def my_first_thm : 1 = 1 := Eq.refl 1
-  \end{verbatim}
+  \begin{Verbatim}[commandchars=\\\{\}, baselinestretch=1.5]
+\textcolor{blue}{def} \term{twice} (\term{n} : \type{Nat}) : \type{Nat} := \term{n + n}
+\textcolor{blue}{def} \term{n} : \type{Nat} := \term{twice 3}
+\textcolor{blue}{def} \term{my_first_thm} : \type{1 = 1} := \term{Eq.refl 1}
+  \end{Verbatim}
   \end{tcolorbox}  
 \end{frame}
 
+\begin{frame}[fragile]{改めてはじめての証明}
+  \begin{tcolorbox}[title=FirstTheorem.lean]
+  \setlength{\baselineskip}{12pt}
+  \begin{Verbatim}[commandchars=\\\{\}, baselinestretch=1.5]
+\textcolor{blue}{def} \term{my_first_thm} : \type{1 = 1} := \term{Eq.refl 1}
+  \end{Verbatim}
+  \end{tcolorbox}
+
+  \term{my\_first\_thm} という項は \type{1=1} という型を持ち、項\term{Eq.refl 1} により定義される。
+  \term{Eq.refl 1} という \type{Nat} 型の項は \term{Eq.refl} という \type{Nat -> Nat} 型の項に \type{Nat} 型の項 \term{1} を適用したものである。
+\end{frame}
+
+\section{証明とプログラムの関係}
+
 \begin{frame}{色々な型}
-  自然数の型Nat, 真偽値の型Boolなど。
-  型A, Bから関数の型、直積型、直和型などを作れる。
-  $f:A\to B$で項$f$が$A$から$B$への関数の型を持つことを表す。
+  自然数の型 \type{Nat} が真偽値の型 \type{Bool} などが標準で用意されている。
+  型\type{A}, \type{B}から関数の型\type{A -> B}が作れる。
+  また、直和型や直積型を作ることもできる。
 
-  $a\in A$のようなものだと思える場合もあるし、
-  ちょっとわかりにくい場合もある。
-  
+  \pause
+
+  型の型\type{Type}がある。（型全体の型ではない。）
   型も項になる。
-  重要な型に$Prop$がある。
-  $P:Prop$に対し、$h:P$を「命題$P$の証明$h$」と解釈する。
+  \term{0} : \type{Nat}であり\term{Nat} : \type{Type}である。
 
-  命題が型、証明が項。
-  命題$P$を証明する、$P$型の項を作る。
-  命題$P$を仮定する、$P$型の項が与えられている。
+  \pause
+
+  重要な型に\type{Prop}がある。
+  これは命題全体の型で、 \term{P} : \type{Prop} は 「$P$が命題である」と解釈する。
+  同時に P は型でもあり、\term{h} : \type{P} を「$h$は命題$P$の証明である」と解釈する。
+
+  \pause
+
+  \term{1=1} : \type{Prop}であり、
+  \type{1=1} という型もある。
+  \term{Eq.refl 1}は\type{1=1}型の項である。
+  「Eq.refl 1が1=1の証明である」と解釈する。
+  \term{Eq.refl} は等式の公理に対応する関数と考えられる。
 \end{frame}
 
 \begin{frame}{証明とプログラム}
-  証明がプログラムとはどういうことか。
+  命題$p$に対応する型\type{P}があり、\type{P}型の項\term{h}を「$h$が$P$の証明である」と解釈する。
 
-  証明とは？おおよそ主張と理由の列と思える。
+  「命題$P$を証明する」ことは、プログラム上では$P$型の項を作ることであると解釈する。
+  「命題$P$を仮定する」ことは、$P$型の項が与えられていることであると解釈する。
+
+  \pause
+
+  証明とはおおよそ主張と理由の列と思える。
   理由となるのは論理規則または公理や定義またはすでに証明した命題。
 
-  プログラムとは？
-  関数の組み合わせ、列および木構造。
+  プログラムとはおおよそ関数の列と思える。
 \end{frame}
 
 \begin{frame}{プログラムの例}
   ある商店ではりんご、みかん、いちごの三種類の果物を売っている。
   1個あたりの値段はりんご100円、みかん50円、いちご200円である。
+
   りんごの個数とみかんの個数といちごの個数を引数に取り、合計金額を返すプログラムを作ろう。
   ただし、レジ袋（1枚だけ）が必要な場合は合計金額に10円を加える。
 \end{frame}
 
 \begin{frame}[fragile]{コーディング}
-  \begin{tcolorbox}[title=Intro.lean]
+  \begin{tcolorbox}[title=SecondTheorems.lean]
   \setlength{\baselineskip}{12pt}
-  \begin{verbatim}
-def total (a b c : Nat) (bag : Bool) : Nat :=
-  a*100 + b*50 + c*200 + if bag then 10 else 0
-  \end{verbatim}
+  \begin{Verbatim}[commandchars=\\\{\}, baselinestretch=1.5]
+\textcolor{blue}{def} \term{total} (\term{a} \term{b} \term{c} : \type{Nat})
+    (\term{bag} : \type{Bool}) : \type{Nat} :=
+  \term{a * 100 + b * 50 +}
+    \term{c * 200 + if bag then 10 else 0}
+  \end{Verbatim}
   \end{tcolorbox}
 
-  $total : Nat \to Nat \to Nat \to Bool \to Nat$という型を持つ関数を作った。
-  $+: Nat \to Nat \to Nat$を使う。
-\end{frame}
+  \term{+} : \type{Nat -> Nat -> Nat} や \term{*} : \type{Nat -> Nat -> Nat}、
+  \term{if then else} : \type{Bool -> Nat}を合成し、
 
-\begin{frame}
-  プログラムの構造
+  項\term{total} : \type{Nat -> Nat -> Nat -> Bool -> Nat}を作った。
 \end{frame}
 
 \begin{frame}{関数とならば}
-  $P, Q$を命題としたとき、$f : P \to Q$は$P$の証明$h:P$を与えると$Q$の証明$f(h):Q$を返す関数と解釈する。  
+  命題$P, Q$に対応する型（\type{Prop}型の項）\type{P}, \type{Q} に対し、
+  関数型の項 \term{f} : \type{P -> Q} は $P$ の証明 \term{h} : \type{P} を与えると $Q$ の証明 \term{f h} : \type{Q} を返す関数と解釈する。  
 
-  プログラムは関数の組み合わせ、証明はならばの組み合わせ。
-  関数は実際の値の対応関係が重要、証明は項の対応関係は気にしないで型だけ気にしてる。
+  プログラムは関数の組み合わせであり、証明はならばの組み合わせである。
 
-  証明は区別しておらず、関数があるかないかだけが重要
+  ただし、通常のプログラムにおける関数は実際の値の対応関係が重要になる一方で、
+  証明は項の対応関係は気にしないで型だけを気にしている。
+  証明は区別しておらず、関数があるかないかだけが重要。
 \end{frame}
 
 \begin{frame}{定理Aとその証明}
-  $a, b, c$を自然数とし、
-  $a=b$と$b=c$から$a=c$を示す。
+  \begin{theorem}
+    $a, b, c$を自然数とし、
+    $a=b$と$b=c$ならば$a=c$である。
+  \end{theorem}
 
-  等式の推移律により、$a=b$と$b=c$から$a=c$を導くことができる。
-
-  等号の推移律$a=b$と$b=c$が仮定されると$a=c$が導ける。
-  （正確には$a, b, c$もパラメータ（引数）である。）
-  $a=b$の証明と$b=c$の証明を受け取って$a=c$の証明を返す関数である。
-  （仮定の証明及び推移律がどういう関数であるかは気にしていない。）
+  \begin{proof}
+    等式の推移律により、$a=b$と$b=c$から$a=c$を導くことができる。    
+  \end{proof}
 \end{frame}
 
-\begin{frame}{定理Aの証明の構造}
-  証明の構造
-\end{frame}
+\begin{frame}[fragile]{定理Aの証明のコーディング}
+  \begin{tcolorbox}[title=SecondTheorems.lean]
+  \setlength{\baselineskip}{12pt}
+  \begin{Verbatim}[commandchars=\\\{\}, baselinestretch=1.5]
+\textcolor{blue}{theorem} \term{A} (\term{a} \term{b} \term{c} : \type{Nat})
+    (\term{h0} : \type{a = b}) (\term{h1} : \type{b = c}) :
+    \type{a = c} :=
+  \term{Eq.trans h0 h1}
+  \end{Verbatim}
+  \end{tcolorbox}  
 
-\begin{frame}{定理Aの証明のコーディング}
-  等号の推移律を与える関数$Eq.trans : a = b → b = c → a = c$を用いる。
-  これは$a=b$型の項と$b=c$型の項から$a=c$型の項を作る関数である。
-  （正確には$\alpha, a, b, c$も引数にとるがいまは省略）
-  （依存型？$a=b$という型は$a, b$を変数（引数）にもつ関数$Eq$により作られる型）
+  関数 \term{Eq.trans} : \type{a = b -> b = c -> a = c} は
+  \type{a=b} 型の項と \type{b=c} 型の項を受け取り \type{a=c} 型の項を返す関数である。
+
+  これは命題$a=b$の証明と命題$b=c$の証明から命題$a=c$の証明を与える、
+  つまり等号の推移律の証明と解釈できる。
 \end{frame}
 
 \begin{frame}{定理Bとその証明}
-  $a, b$を自然数とする。
-  $(a+1)\times b=a\times b+b$が成り立つ。
+  \begin{theorem}
+    $a, b$を自然数とする。
+    $(a+1)\times b=a\times b+b$が成り立つ。      
+  \end{theorem}
 
-  $(a+1)\times b=a\times b+1\times b$である。（分配法則）
+  \begin{proof}
+    分配法則より$(a+1)\times b=a\times b+1\times b$である。
 
-  $1\times b= b$である。（掛け算の定義）
-
-  $a\times b+1\times b=a\times b+ b$である。（関数$x\mapsto a\times b+x$と等号の定義）
-
-  $(a+1)\times b=a\times b+b$である。（等号の推移律）
+    掛け算の定義より$1\times b= b$である。
+    
+    関数と等号の定義より$a\times b+1\times b=a\times b+ b$である。
+    
+    等号の推移律より$(a+1)\times b=a\times b+b$である。    
+  \end{proof}
 \end{frame}
 
-\begin{frame}{定理Bの証明の構造}
-  木構造？を明示する。
-  証明の構造
-\end{frame}
-
-\begin{frame}{定理Bの証明のコーディング}
-  中間的な主張に名前をつける。
-  （haveを使うかletを使うか）
+\begin{frame}[fragile]{定理Bの証明のコーディング}
+  \begin{tcolorbox}[title=SecondTheorems.lean]
+  \setlength{\baselineskip}{12pt}
+  \begin{Verbatim}[commandchars=\\\{\}, baselinestretch=1.5]
+\textcolor{blue}{theorem} \term{B} (\term{a} \term{b} : \type{Nat})
+    : \type{(a + 1) * b = a * b + b} :=
+  \term{Eq.trans (Nat.right_distrib a 1 b)}
+      \term{(congrArg}
+        \term{(fun x => a * b + x)}
+        \term{(Nat.one_mul b))}
+  \end{Verbatim}
+  \end{tcolorbox}  
 \end{frame}
 
 \begin{frame}{定理Cとその証明}
-  $a$を自然数とする。
-  $(a+1)\times(b+1)=a\times b+a+b+1$が成り立つ。
+  \begin{theorem}
+    $a$を自然数とする。
+    $(a+1)\times(b+1)=a\times b+a+b+1$が成り立つ。      
+  \end{theorem}
 
-  一つ前の定理を使うと、$(a+1)\times(b+1)=a\times(b+1)+(b+1)$である。
-  $a\times(b+1)=a\times b+a$である。
+  \begin{proof}
+    定理Bを使うと、$(a+1)\times(b+1)=a\times(b+1)+(b+1)$である。
+    $a\times(b+1)=a\times b+a$である。      
+  \end{proof}
 \end{frame}
 
-\begin{frame}{定理Cの証明の構造}
-  証明の構造
-\end{frame}
-
-\begin{frame}{定理Cの証明のコーディング}
-  一つ前の定理を使う。
+\begin{frame}[fragile]{定理Cの証明のコーディング}
+  \begin{tcolorbox}[title=SecondTheorems.lean]
+  \setlength{\baselineskip}{12pt}
+  \begin{Verbatim}[commandchars=\\\{\}, baselinestretch=1.5]
+\textcolor{blue}{theorem} \term{C} (\term{a} \term{b} : \type{Nat}) :
+\type{(a + 1) * (b + 1) = a * b + a + b + 1} :=
+  \term{Eq.trans (Eq.trans (B a (b + 1))}
+    \term{(congrArg (fun x => x + (b + 1))}
+      \term{(Eq.trans (Nat.left_distrib a b 1)}
+        \term{(congrArg (fun x => a * b + x)}
+          \term{(Nat.mul_one a)))))}
+  \term{(Eq.symm}
+    \term{(Nat.add_assoc (a * b + a) b 1))}
+  \end{Verbatim}
+  \end{tcolorbox}  
 \end{frame}
 
 \begin{frame}{ここまでの整理}
-  $P$を仮定すると$Q$が成り立つという定理。
-  証明は$P$ならば$P_1$、$P_1$ならば$P_2$、$\cdots$、$P_{n-1}$ならば$Q$という命題とその証明の列。
+  $P$を仮定すると$Q$が成り立つという定理の証明は、
+  $P$ならば$P_1$、$P_1$ならば$P_2$、$\cdots$、$P_{n-1}$ならば$Q$という命題とその証明の列で与えられる。
 
-  型$P$から型$Q$への関数を作りたい。
-  関数$P\to P_1, P_1\to P_2,\ldots, P_{n-1}\to Q$（関数型の具体的な項）を合成することで$P\to Q$を作ることができる。
+  型$P$から型$Q$への関数を作るには、
+  関数$P\to P_1, P_1\to P_2,\ldots, P_{n-1}\to Q$（関数型の具体的な項）を合成すればよい。
 
-  違うところ。
-  プログラムでは項の対応が重要な問題だが、定理の証明では型さえ合っていれば項の具体的な対応は気にしない。
-  （証明同士を比較しない）
+  \pause
+
+  プログラムでは項の対応が重要である一方、定理の証明では型さえ合っていれば項の具体的な対応は気にしない。
 \end{frame}
 
 \section{述語論理と依存型}
 
 \begin{frame}{直積/直和とかつ/または}
-  関数$P \times Q\to R$を作る、
-  関数$P\to R$か関数$Q\to R$を作ればよい。（それ以外にもありうる。）
+  命題$P, Q$から命題$P$かつ$Q$、$P$または$Q$を作ることができる。
+  これに対応して、型\type{P} , \type{Q}から直積型\type{P x Q}、直和型\type{P + Q}を作ることができる。
 
-  関数$R\to P\times Q$を作る、関数$R\to P$と関数$R\to Q$を作る。
+  \pause
 
-  関数$P+Q\to R$を作る、関数$P\to R$と関数$Q\to R$を作る。
+  関数$R\to P\times Q$を作ることは関数$R\to P$と関数$R\to Q$を作ることと同じ。
+  これは$R$ならば（$P$かつ$Q$）の証明は、$R$ならば$P$の証明と$R$ならば$Q$の証明の組であることに対応する。
 
-  関数$R\to P+Q$を作る、
-  関数$R\to P$か関数$R\to Q$を作ればよい。（それ以外にもありうる。）
+  \pause
+
+  関数$P+Q\to R$を作ることと関数$P\to R$と関数$Q\to R$を作ることは同じ。
+  これは（$P$または$Q$）ならば$R$の証明は、$P$ならば$R$の証明と$Q$ならば$R$の証明の組であることに対応する。
 \end{frame}
 
-\begin{frame}{述語論理}
-  存在命題と全称命題。
+\begin{frame}{述語論理と依存型(1/2)}
+  型の族（型でパラメータ付けられた型、型\type{A}から型の型\type{Type}への関数）を考えることができる。
+  例えば、自然数$n$に対して$n$次元実数ベクトルの型$\mathbb{R}^n$を考える。
+  型の族から、族の直積型と直和型を考えることができる。
+  これが依存積型と依存和型である。
 
-  依存型。
-  $n=m$という命題は変数$n, m$に依存している。    
+  \pause
 
-  $n=m$はProp型の項であり、また$n=m$自体も型である。
+  命題は型であった。
+  命題の族は述語$P(n)$だと思える。
+  例えば、自然数$n$に対して$0<n$であるという命題$P(n)$を考える。
+  \term{P} は\type{Nat -> Prop}という型を持つ。
 
-  依存和と依存積。
-  族の直和と族の直積。
+  \pause
+
+  先ほどまでに出てきた\term{a}, \term{b} : \type{Nat} に対する\type{a=b}という型も、
+  パラメータa, bに依存する型の族である。
+\end{frame}
+
+\begin{frame}{述語論理と依存型(2/2)}
+  この型の族\term{P}の直積型の項\term{h}は何か？
+  すべての$n$に対して\term{h n}という\type{P n}型の項を並べたものと思うことができる。
+  \type{P n}型の項\term{h n}は命題$P(n)$の証明であるから、
+  \term{h}はすべての$n$に対する命題$P(n)$の証明を並べたもの、
+  つまり、$\forall n, P(n)$の証明である。
+
+  \pause
+
+  直和型の項は？
+  ある$n$に対して\term{h n}という\type{P n}型の項を選んだものと思うことができる。
+  \type{P n}型の項\term{h n}は命題$P(n)$の証明であるから、
+  \term{h}はある$n$に対する命題$P(n)$の証明を選んだもの、
+  つまり、$\exists n, P(n)$の証明である。
 \end{frame}
 
 \begin{frame}{全称命題の証明例}
-  実はすでに使ってた。
-  関数と同一視している。
+  \begin{theorem}
+    任意の自然数$n$に対して$0\leq n$である。
+  \end{theorem}
 
-  依存関数型？
-  def hoge (n : Nat) : P n := hoge
-  定義域はNatで行き先の方は引数の値に依存して変わっている。
-  定数族の直積が普通の関数。
+  \begin{proof}
+    不等号の定義と帰納法よりよい。
+  \end{proof}
+
+  \pause
+  族の直積は、族が定数族の場合関数型とみなせる。
+  これの拡張で、依存積は依存関数型とも呼ばれ、
+  関数型の拡張と考えられる。
+
+  \pause
+
+  全称命題の証明は対応する依存積型（依存関数型）の項を作ればよく、
+  それには関数を定義すればよい。
+  ただし、値の型が引数によって変わるところがポイント。
 \end{frame}
 
-\begin{frame}{全称命題のコーディング例}
-  先ほどの定理は実は全称命題でした。
-
-  def hoge (a : A) := baとdef hoge : A -> B := fun a => ba は同じもの。
+\begin{frame}[fragile]{全称命題のコーディング例}
+  \begin{tcolorbox}[title=Quantifier.lean]
+  \setlength{\baselineskip}{12pt}
+  \begin{Verbatim}[commandchars=\\\{\}, baselinestretch=1.5]
+\textcolor{blue}{theorem} \term{zero_is_min} :
+    \type{∀ n : Nat, 0 \leq n} :=
+  \term{fun n \mapsto Nat.zero_le n}
+\textcolor{blue}{theorem} \term{zero_is_min} (n : \type{Nat}):
+    \type{∀ n : Nat, 0 \leq n} :=
+  \term{Nat.zero_le n}
+  \end{Verbatim}
+  \end{tcolorbox}  
 \end{frame}
 
 \begin{frame}{存在命題の証明例}
-  自然数$n, m$を考える。（ここに任意のを入れるかどうか）
-  $n$が偶数であり、$m$がが偶数であるならば、$n+m$は偶数である。
+  \begin{theorem}
+    $1$より大きな自然数が存在する。    
+  \end{theorem}
 
-  $n$が偶数であるので、その定義からある自然数$k$が存在して、$n=2k$である。
-  同様に、$m$が偶数であるので、ある自然数$l$が存在して、$m=2l$である。
-  $n+m=2k+2l=2(k+l)$であるから、$n+m$は偶数である。
+  つまり$\exists m, 1 < m$を証明する。
+
+  \begin{problem}
+    $m=2$とすると、$1 < 2$なのでこれが条件を満たす。    
+  \end{problem}
 \end{frame}
 
-\begin{frame}{存在命題のコーディング例}
-  コーディング
+\begin{frame}[fragile]{存在命題のコーディング例}
+  \begin{tcolorbox}[title=Quantifier.lean]
+  \setlength{\baselineskip}{12pt}
+  \begin{Verbatim}[commandchars=\\\{\}, baselinestretch=1.5]
+\textcolor{blue}{theorem} \term{one_not_max} :
+    \type{∃ m, 1 < m} :=
+  \term{<2, Nat.one_lt_two>}
+  \end{Verbatim}
+  \end{tcolorbox}  
+
+  項 \term{one\_not\_max} は依存和型を持つ。
+  これは、\term{m} : \type{Nat} で添字づけられた型 \type{n<m} に対する依存和型。
+  すなわち$m$を変数とする述語$P(m)=n<m$に対する存在命題。
 \end{frame}
 
-\begin{frame}
-  $n$が$4$の倍数ならば$n$は$2$の倍数である。
-  $n$が$8$の倍数ならば$n$は$4$の倍数である。
-  という二つの定理から、
-  $n$が$8$の倍数ならば$n$は$2$の倍数である。
-  を導く。
+\begin{frame}[fragile]{量化子の組み合わせ}
+  量化子を組み合わせることもできる。
+  依存和や依存積を繰り返すこともできる。
 
-  $P$ならば$Q$と$Q$ならば$R$から$P$ならば$R$を導く。
-  関数の合成。
-
-  任意の$n$に対して、$n$が$4$の倍数ならば$n$は$2$の倍数である。  
+  \begin{tcolorbox}[title=Quantifier.lean]
+    \setlength{\baselineskip}{12pt}
+    \begin{Verbatim}[commandchars=\\\{\}, baselinestretch=1.5]
+\textcolor{blue}{theorem} \term{no_max} :
+    \type{∀ n : Nat, ∃ m : Nat, n < m} :=
+  \term{fun n =>}
+    \term{<(n + 1), (Nat.lt_succ_self n)>}
+    \end{Verbatim}
+    \end{tcolorbox}  
 \end{frame}
 
 \section{証明を支援する仕組み}
 
 \begin{frame}{証明の記述}
-  面倒な部分は色々と便利な機能で省略していく。
-  calcモードとか。
-  タクティック、simpとかringとか。
-  これらを使うとどう簡略化できるかデモ。
-
-  項を直接書く（ここまで）
-
-  タクティックを使う。
-
-  これらの組み合わせもできる。
+  \begin{itemize}
+    \item 引数の省略やドット記法
+    \item calcモード
+    \item タクティクによる証明。
+    \item ライブラリを使う。
+  \end{itemize}
 \end{frame}
 
-\begin{frame}{タクティック}
-  タクティックについて。
-  タクティックは関数ではなくモナド。
-  関数は項を扱う。
-  タクティックは項だけでなく状態を扱う。
+\begin{frame}[fragile]{calcモード}
+  等式や不等式の変形や命題の同値変形、より一般に推移的な関係による変形を書くためのモード。
+  \begin{tcolorbox}[title=Assist.lean]
+    \setlength{\baselineskip}{12pt}
+    \begin{Verbatim}[commandchars=\\\{\}, baselinestretch=1.5]
+theorem A (a b c : Nat) (h0 : a = b)
+    (h1 : b = c) : a = c :=
+  calc
+    a = b := h0
+    _ = c := h1  
+    \end{Verbatim}
+    \end{tcolorbox}  
+\end{frame}
 
-  タクティックで記述が簡単になる。
-  ある程度の証明の自動化（simpを用いた自動化の例など）もできる。
-  定理A, B, Cをタクティックを使って証明する。
+\begin{frame}{タクティク}
+  これまでは、証明したい命題に対応する型の項を直接記述した。
+  タクティクという仕組みを用いることで、直接項を書くより簡単に証明が書ける。
+  また、ごく一部だが、証明の自動化や探索ができる。
+
+  タクティクは関数ではない。
+  タクティクは項だけでなく状態を扱う。
+  同じ項でも状態によって返ってくる結果が違う。
+\end{frame}
+
+\begin{frame}[fragile]{タクティクを使った証明A}
+  先ほどの定理A, B, Cをタクティクを使って証明してみる。
+  \begin{tcolorbox}[title=Assist.lean]
+  \setlength{\baselineskip}{12pt}
+  \begin{Verbatim}[commandchars=\\\{\}, baselinestretch=1.5]
+theorem A (a b c : Nat) (h0 : a = b)
+    (h1 : b = c) : a = c := by
+  simp [h0, h1]
+  \end{Verbatim}
+  \end{tcolorbox}  
+\end{frame}
+
+\begin{frame}[fragile]{タクティクを使った証明B}
+  \begin{tcolorbox}[title=Assist.lean]
+  \setlength{\baselineskip}{12pt}
+  \begin{Verbatim}[commandchars=\\\{\}, baselinestretch=1.5]
+theorem B (a b : Nat) :
+    (a + 1) * b = a * b + b :=
+  calc
+    (a + 1) * b = a * b + 1 * b :=
+      Nat.right_distrib _ _ _
+    _ = a * b + b := by
+      simp [Nat.one_mul]
+  \end{Verbatim}
+  \end{tcolorbox}  
+\end{frame}
+
+\begin{frame}[fragile]{タクティクを使った証明C}
+  \begin{tcolorbox}[title=Assist.lean]
+  \setlength{\baselineskip}{12pt}
+  \begin{Verbatim}[commandchars=\\\{\}, baselinestretch=1.5]
+theorem C (a : Nat) :
+    (a + 1) * (b + 1) =
+        a * b + a + b + 1 :=
+  calc
+    (a + 1) * (b + 1) =
+        a * (b + 1) + 1 * (b + 1) := by
+      apply Nat.right_distrib
+    _ = a * b + a + b + 1 := by
+      simp [Nat.left_distrib, Nat.add_assoc]
+  \end{Verbatim}
+  \end{tcolorbox}  
 \end{frame}
 
 \begin{frame}{ライブラリ}
   普通のプログラミング言語と同様、LEANにもさまざまなライブラリが存在する。
-
   普通は便利なデータ構造やそれらを扱う関数がライブラリにある。
-  LEANでは数学的構造やそれらに関するの定理がライブラリにある。
+  LEANでは数学的構造やそれらに関するの定理もライブラリにある。
 
-  ライブラリにあるかないかは、誰かが書いたかどうか、数学的な難しさなどはそこまで関係ない。
-  （最近の論文の結果でも実装されているものもある、例示）
-
-  ライブラリの定理を使用。mathlib docsを見るとか。exact?とか。
-  より便利なタクティックもライブラリにある。
+  mathlibというライブラリが一番大きなleanの数学の定理に関するライブラリ。
+  ライブラリにあるかないかは誰かが書いたかどうかが重要で、数学的な難しさなどはそこまで関係ない。
+  より便利なタクティクもライブラリにある。
 \end{frame}
 
 \begin{frame}{ライブラリを使った証明}
-  実はmathlibというライブラリには微積分学の基本定理がある。
-  ライブラリを使った証明をまずは見てみよう。
-\end{frame}
-
-\begin{frame}
-  微積分に関連するmathlibの定理の紹介。
+  mathlibには微積分学の基本定理がすでに形式化されてある。
 \end{frame}
 
 \section{微積分学の基本定理を証明する}
@@ -347,15 +535,11 @@ def total (a b c : Nat) (bag : Bool) : Nat :=
 \begin{frame}{目標の定理}
   $f:\mathbb{R}\to\mathbb{R}$が連続であるとする。
   $$
-  \frac{d}{dx}\int^x_af(t)dt=f(x)
+    \frac{d}{dx}\int^x_af(t)dt=f(x)
   $$
 
   今回はあえてライブラリを一切使わずに証明する。
   実数については公理だけを使う。（参考、杉浦解析入門）
-\end{frame}
-
-\begin{frame}
-  極限の定義、関数の連続性の定義、微分の定義、積分の定義。
 \end{frame}
 
 \begin{frame}{証明([杉浦]より引用)(1/4)}
@@ -367,16 +551,16 @@ def total (a b c : Nat) (bag : Bool) : Nat :=
 
   任意の実数$x, y$に対して等式
   $$
-  F(x)-F(y)=\int^x_yf(t)dt
+    F(x)-F(y)=\int^x_yf(t)dt
   $$
   が成り立ち、また三角不等式
   $$
-  \left\lvert\int^x_yf(t)dt\right\rvert\leq\left\lvert\int^x_y\lvert f(t)\rvert dt\right\rvert
+    \left\lvert\int^x_yf(t)dt\right\rvert\leq\left\lvert\int^x_y\lvert f(t)\rvert dt\right\rvert
   $$
   が任意の$x, y$に対して成り立つことから、
 \end{frame}
 
-\begin{frame}{証明([杉浦]より引用)(2/4)}
+\begin{frame}{証明(2/4)}
   任意の実数$h\neq0$に対し、
   \begin{align*}
     \left\lvert\frac{1}{h}(F(x+h)-F(x))-f(x)\right\rvert
@@ -386,7 +570,7 @@ def total (a b c : Nat) (bag : Bool) : Nat :=
   となる。
 \end{frame}
 
-\begin{frame}{証明([杉浦]より引用)(3/4)}
+\begin{frame}{証明(3/4)}
   いま$f$は$x$で連続であるから、任意の$\epsilon>0$に対して、$\delta>0$が存在し、
   $$
   \lvert t-x\rvert<\delta
@@ -398,7 +582,7 @@ def total (a b c : Nat) (bag : Bool) : Nat :=
   となる。
 \end{frame}
 
-\begin{frame}{証明([杉浦]より引用)(4/4)}
+\begin{frame}{証明(4/4)}
   そこで、$0<\lvert h\rvert <\delta$のとき上式の右辺は$\leq\epsilon$となる。
   これは、
   $$
@@ -407,72 +591,27 @@ def total (a b c : Nat) (bag : Bool) : Nat :=
   を意味する。すなわち$F$は$x$で微分可能で、$F'(x)=f(x)$である。
 \end{frame}
 
-\begin{frame}{定理の証明(1/3)}
-  微分の定義から、
-  $$
-  \frac{d}{dx}\int^x_af(t)dt=
-  \lim_{h\to 0}\frac{1}{h}\int^{x+h}_xf(t)dt
-  $$
-  である。
-  また、定数関数の積分から、任意の正の実数$h$に対して、
-  $$
-  f(x)=\frac{1}{h}\int^{x+h}_xf(x)dt
-  $$
-  である。
-  よって、
-  $$
-  \lim_{h\to0}\frac{1}{h}\int_{x}^{x+h}(f(x)-f(t))dt=0
-  $$
-  を言えば良い。
+\begin{frame}{必要な定義や定理の形式化}
+  \begin{itemize}
+    \item 実数の公理や諸性質。
+    \item 関数の極限、関数の連続性、微分、積分の定義。
+    \item 積分の三角不等式、単調性、定数関数の積分、線形性、区間に関する加法性など。
+  \end{itemize}
 \end{frame}
 
-\begin{frame}{定理の証明(2/3)}
-  $\displaystyle\lim_{h\to0}\dfrac{1}{h}\displaystyle\int_{x}^{x+h}(f(x)-f(t))dt=0$を示す。
-
-  任意の$\epsilon>0$に対し、ある$\delta>0$が存在し、
-  実数$h$が$0<\lvert h\rvert<\delta$ならば、
-  $$
-  \left\lvert \frac{1}{h}\int_{x}^{x+h}(f(x)-f(t))dt\right\rvert<\epsilon
-  $$
-  であることを示したい。
-
-  $\epsilon>0$とする。
-  $f$の連続性から、ある$\delta>0$が存在して、$\lvert x-t\rvert<\delta$ならば$\lvert f(x)-f(t)\rvert<\epsilon$である。
-  このような$\delta$を一つとり、これが条件を満たすことを示す。
-\end{frame}
-
-\begin{frame}{定理の証明(3/3)}
-  $\epsilon >0$とし、$\delta>0$が$\lvert x-t\rvert<\delta$ならば$\lvert f(x)-f(t)\rvert<\epsilon$であるとする。
-  実数$h$が$0<\lvert h\rvert<\delta$ならば、
-  $$
-  \left\lvert \frac{1}{h}\int_{x}^{x+h}f(x)-f(t)dt\right\rvert<\epsilon
-  $$
-  であることを示す。
-
-  $\lvert t-x\rvert\leq\lvert h\rvert$ならば$\lvert f(x)-f(t)\rvert<\epsilon$であり、
-  積分の三角不等式、積分の単調性、定数関数の積分から、
-  $$
-  \left\lvert\int^{x+h}_xf(x)-f(t)dt\right\rvert
-  \leq\int^{x+h}_x\lvert f(x)-f(t)\rvert dt
-  <\int^{x+h}_x\epsilon dt=\epsilon h
-  $$
-  となる。
-\end{frame}
-
-\begin{frame}{必要な積分の性質}
-  三角不等式
-
-  単調性
-
-  定数関数の積分
-\end{frame}
-
-\begin{frame}{コーディング(1/n)}
+\begin{frame}{証明の形式化}
   証明に対応するコーディングをしよう。
 \end{frame}
 
 \begin{frame}{参考資料}
-  興味を持った人のために、参考資料、動画など
+  興味を持った人のために。
+  公式doc
+  Mathinlean
+  勉強会
+
+
+  参考資料、
+  動画など
 \end{frame}
 
 \end{document}

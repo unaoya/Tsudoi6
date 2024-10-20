@@ -63,6 +63,11 @@
   \large{集合のことは忘れてください}
 \end{frame}
 
+\begin{frame}{型と項}
+  項 a が型 A を持つことを \term{a} : \type{A} と表す。
+  項は必ず型をもつ。
+\end{frame}
+
 \begin{frame}[fragile]{はじめての証明}
   $1=1$を証明する。
 
@@ -74,28 +79,29 @@ def my_first_thm : 1 = 1 := Eq.refl 1
   \end{tcolorbox}
 \end{frame}
 
-\begin{frame}[fragile]{型と項}
-  項 a が型 A を持つことを \term{a} : \type{A} と表す。
-  項は必ず型をもつ。
-  
-  \pause
+\begin{frame}[fragile]{項を定義する}
+  \term{n} という \type{Nat} 型の項を \term{1} という項により定義する。
 
   \begin{tcolorbox}[title=FirstTheorem.lean]
   \setlength{\baselineskip}{12pt}
   \begin{Verbatim}[commandchars=\\\{\}, baselinestretch=1.5]
 \textcolor{blue}{def} \term{n} : \type{Nat} := \term{1}    
-\textcolor{blue}{def} \term{my_first_thm} : \type{1 = 1} := \term{Eq.refl 1}    
   \end{Verbatim}
   \end{tcolorbox}  
 
-  \term{n} という \type{Nat} 型の項を \term{1} という項により定義する。
+  \pause
+
   \term{my\_first\_thm} という \type{1=1} 型の項を \term{Eq.refl 1} という項により定義する。
+  \begin{tcolorbox}[title=FirstTheorem.lean]
+  \setlength{\baselineskip}{12pt}
+  \begin{Verbatim}[commandchars=\\\{\}, baselinestretch=1.5]
+\textcolor{blue}{def} \term{my_first_thm} : \type{1 = 1} := \term{Eq.refl 1}    
+  \end{Verbatim}
+  \end{tcolorbox}  
 \end{frame}
 
 \begin{frame}[fragile]{関数型}
   項 \term{f} が型 \type{A} から型 \type{B} への関数型を持つことを、\term{f} : \type{A -> B}と書く。
-
-  \pause
 
   \begin{tcolorbox}[title=FirstTheorem.lean]
   \setlength{\baselineskip}{12pt}
@@ -130,6 +136,8 @@ def my_first_thm : 1 = 1 := Eq.refl 1
 \textcolor{blue}{def} \term{my_first_thm} : \type{1 = 1} := \term{Eq.refl 1}
   \end{Verbatim}
   \end{tcolorbox}
+
+  \pause
 
   \term{my\_first\_thm} という項は \type{1=1} という型を持ち、項\term{Eq.refl 1} により定義される。
   \term{Eq.refl 1} という \type{Nat} 型の項は \term{Eq.refl} という \type{Nat -> Nat} 型の項に \type{Nat} 型の項 \term{1} を適用したものである。
@@ -233,6 +241,8 @@ def my_first_thm : 1 = 1 := Eq.refl 1
   \term{Eq.trans h0 h1}
   \end{Verbatim}
   \end{tcolorbox}  
+
+  \pause
 
   関数 \term{Eq.trans} : \type{a = b -> b = c -> a = c} は
   \type{a=b} 型の項と \type{b=c} 型の項を受け取り \type{a=c} 型の項を返す関数である。
@@ -391,11 +401,16 @@ def my_first_thm : 1 = 1 := Eq.refl 1
 \textcolor{blue}{theorem} \term{zero_is_min} :
     \type{∀ n : Nat, 0 \leq n} :=
   \term{fun n \mapsto Nat.zero_le n}
+  \end{Verbatim}
+  \end{tcolorbox}
+  \begin{tcolorbox}[title=Quantifier.lean]
+  \setlength{\baselineskip}{12pt}
+  \begin{Verbatim}[commandchars=\\\{\}, baselinestretch=1.5]
 \textcolor{blue}{theorem} \term{zero_is_min} (n : \type{Nat}):
     \type{∀ n : Nat, 0 \leq n} :=
   \term{Nat.zero_le n}
   \end{Verbatim}
-  \end{tcolorbox}  
+  \end{tcolorbox}    
 \end{frame}
 
 \begin{frame}{存在命題の証明例}
@@ -442,10 +457,11 @@ def my_first_thm : 1 = 1 := Eq.refl 1
 
 \begin{frame}{ここまでのまとめ}
   パラメータ付けられた型の族（\term{f} : \type{A -> Type}）を考えることができる。
+  これに対する族の直積型と直和型を考えることができる。
 
-  これに対する族の直積と直和を考えることができる。
-
-  これらが全称命題と存在命題に対応する。
+  特にパラメータ付けられた命題の族（\term{P} : \type{A -> Prop}）を考えることができる。
+  これに対しても族の直積型と直和型を考えることができる。
+  これらが全称命題$\forall a : A, f a$と存在命題$\exists a : A, P a$に対応する。
 \end{frame}
 
 \section{証明を支援する仕組み}

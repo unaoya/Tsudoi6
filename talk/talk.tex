@@ -51,11 +51,17 @@
 
 \begin{frame}{資料について}
   今回使用するソースコード、スライドは以下のGitHubリポジトリにあります。
+  \url{https://github.com/unaoya/Tsudoi6}
 
   Xのアカウント@unaoya固定ポストにリンクがあります。
+  \url{https://x.com/unaoya}
 \end{frame}
 
 \section{はじめてのLEAN}
+
+\begin{frame}{はじめに}
+  \large{集合のことは忘れてください}
+\end{frame}
 
 \begin{frame}[fragile]{はじめての証明}
   $1=1$を証明する。
@@ -134,7 +140,7 @@ def my_first_thm : 1 = 1 := Eq.refl 1
 \begin{frame}{色々な型}
   自然数の型 \type{Nat} が真偽値の型 \type{Bool} などが標準で用意されている。
   型\type{A}, \type{B}から関数の型\type{A -> B}が作れる。
-  また、直和型や直積型を作ることもできる。
+  また、直和型\type{A x B}や直積型\type{A + B}を作ることもできる。
 
   \pause
 
@@ -151,17 +157,16 @@ def my_first_thm : 1 = 1 := Eq.refl 1
   \pause
 
   \term{1=1} : \type{Prop}であり、
-  \type{1=1} という型もある。
-  \term{Eq.refl 1}は\type{1=1}型の項である。
-  「Eq.refl 1が1=1の証明である」と解釈する。
-  \term{Eq.refl} は等式の公理に対応する関数と考えられる。
+  \term{Eq.refl 1} : \type{1=1}である。
+  これを「Eq.refl 1が1=1の証明である」と解釈し、
+  \term{Eq.refl} は等式の公理に対応する関数と考える。
 \end{frame}
 
 \begin{frame}{証明とプログラム}
   命題$p$に対応する型\type{P}があり、\type{P}型の項\term{h}を「$h$が$P$の証明である」と解釈する。
 
-  「命題$P$を証明する」ことは、プログラム上では$P$型の項を作ることであると解釈する。
-  「命題$P$を仮定する」ことは、$P$型の項が与えられていることであると解釈する。
+  「命題$P$を証明する」ことは、プログラム上では\type{P}型の項を作ることであると解釈する。
+  「命題$P$を仮定する」ことは、\type{P}型の項が与えられていることであると解釈する。
 
   \pause
 
@@ -204,7 +209,7 @@ def my_first_thm : 1 = 1 := Eq.refl 1
 
   ただし、通常のプログラムにおける関数は実際の値の対応関係が重要になる一方で、
   証明は項の対応関係は気にしないで型だけを気にしている。
-  証明は区別しておらず、関数があるかないかだけが重要。
+  証明は区別せず、項があるかないかが重要。
 \end{frame}
 
 \begin{frame}{定理Aとその証明}
@@ -298,12 +303,10 @@ def my_first_thm : 1 = 1 := Eq.refl 1
 
 \begin{frame}{ここまでの整理}
   $P$を仮定すると$Q$が成り立つという定理の証明は、
-  $P$ならば$P_1$、$P_1$ならば$P_2$、$\cdots$、$P_{n-1}$ならば$Q$という命題とその証明の列で与えられる。
+  $P$ならば$P_1$、$P_1$ならば$P_2$、$\ldots$、$P_{n-1}$ならば$Q$という命題とその証明の列で与えられる。
 
-  型$P$から型$Q$への関数を作るには、
-  関数$P\to P_1, P_1\to P_2,\ldots, P_{n-1}\to Q$（関数型の具体的な項）を合成すればよい。
-
-  \pause
+  \type{P}から\type{Q}への関数を作るには、
+  項\term{h1} : \type{P -> P1}, \term{h2} : \type{P1 -> P2}, $\ldots$, \term{hn} : \type{P(n-1) -> Q}を合成すればよい。
 
   プログラムでは項の対応が重要である一方、定理の証明では型さえ合っていれば項の具体的な対応は気にしない。
 \end{frame}
@@ -325,7 +328,7 @@ def my_first_thm : 1 = 1 := Eq.refl 1
   これは（$P$または$Q$）ならば$R$の証明は、$P$ならば$R$の証明と$Q$ならば$R$の証明の組であることに対応する。
 \end{frame}
 
-\begin{frame}{述語論理と依存型(1/2)}
+\begin{frame}{依存型}
   型の族（型でパラメータ付けられた型、型\type{A}から型の型\type{Type}への関数）を考えることができる。
   例えば、自然数$n$に対して$n$次元実数ベクトルの型$\mathbb{R}^n$を考える。
   型の族から、族の直積型と直和型を考えることができる。
@@ -344,9 +347,9 @@ def my_first_thm : 1 = 1 := Eq.refl 1
   パラメータa, bに依存する型の族である。
 \end{frame}
 
-\begin{frame}{述語論理と依存型(2/2)}
+\begin{frame}{述語論理と依存型}
   この型の族\term{P}の直積型の項\term{h}は何か？
-  すべての$n$に対して\term{h n}という\type{P n}型の項を並べたものと思うことができる。
+  すべての\term{n}に対して\term{h n}という\type{P n}型の項を並べたものと思うことができる。
   \type{P n}型の項\term{h n}は命題$P(n)$の証明であるから、
   \term{h}はすべての$n$に対する命題$P(n)$の証明を並べたもの、
   つまり、$\forall n, P(n)$の証明である。
@@ -354,7 +357,7 @@ def my_first_thm : 1 = 1 := Eq.refl 1
   \pause
 
   直和型の項は？
-  ある$n$に対して\term{h n}という\type{P n}型の項を選んだものと思うことができる。
+  ある\term{n}に対して\term{h n}という\type{P n}型の項を選んだものと思うことができる。
   \type{P n}型の項\term{h n}は命題$P(n)$の証明であるから、
   \term{h}はある$n$に対する命題$P(n)$の証明を選んだもの、
   つまり、$\exists n, P(n)$の証明である。
@@ -435,6 +438,14 @@ def my_first_thm : 1 = 1 := Eq.refl 1
     \term{<(n + 1), (Nat.lt_succ_self n)>}
     \end{Verbatim}
     \end{tcolorbox}  
+\end{frame}
+
+\begin{frame}{ここまでのまとめ}
+  パラメータ付けられた型の族（\term{f} : \type{A -> Type}）を考えることができる。
+
+  これに対する族の直積と直和を考えることができる。
+
+  これらが全称命題と存在命題に対応する。
 \end{frame}
 
 \section{証明を支援する仕組み}
@@ -542,7 +553,7 @@ theorem C (a : Nat) :
   実数については公理だけを使う。（参考、杉浦解析入門）
 \end{frame}
 
-\begin{frame}{証明([杉浦]より引用)(1/4)}
+\begin{frame}{証明(杉浦解析入門より引用)(1/4)}
   実数$x$に対し、
   $$
     F(x)=\int^x_af(t)dt
@@ -604,14 +615,12 @@ theorem C (a : Nat) :
 \end{frame}
 
 \begin{frame}{参考資料}
-  興味を持った人のために。
-  公式doc
-  Mathinlean
-  勉強会
-
-
-  参考資料、
-  動画など
+  \begin{itemize}
+    \item 公式 \url{https://lean-lang.org/documentation/}
+    \item Mathematics in lean \url{https://leanprover-community.github.io/mathematics_in_lean/index.html}
+    \item Theorem Proving in Lean 4 日本語訳 \url{https://aconite-ac.github.io/theorem_proving_in_lean4_ja/title_page.html}
+    \item 数学系のためのLean勉強会 \url{https://haruhisa-enomoto.github.io/lean-math-workshop/}
+  \end{itemize}
 \end{frame}
 
 \end{document}
